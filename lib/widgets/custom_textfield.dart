@@ -4,8 +4,12 @@ import 'package:tictactoe/utils/colors.dart';
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String hintText;
+  final bool readOnly;
   const CustomTextField(
-      {super.key, required this.controller, required this.hintText});
+      {super.key,
+      required this.controller,
+      required this.hintText,
+      this.readOnly = false});
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +22,7 @@ class CustomTextField extends StatelessWidget {
         )
       ]),
       child: TextField(
+        readOnly: readOnly,
         controller: controller,
         decoration: InputDecoration(
             fillColor: bgColor, filled: true, hintText: hintText),
