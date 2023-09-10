@@ -9,14 +9,11 @@ const { dbConnection } = require("./dbConnection");
 const Room = require("./models/room");
 
 io.on("connection", (socket) => {
-  console.log("Connected");
-
   socket.on("createRoom", async ({ nickname }) => {
-    console.log(nickname);
     try {
       let room = new Room();
       let player = {
-        socketId: socket.id,
+        socketID: socket.id,
         nickname,
         playerType: "X",
       };
@@ -53,6 +50,44 @@ io.on("connection", (socket) => {
         io.to(roomId).emit('updateRoom',room);
       }else{
         socket.emit('errorOccurred',"Game is in progress try again later")
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  socket.on('tap',async ({index,roomId})=>{
+    try {
+      let room = await Room.findById(roomId);
+      let choice = room.turn.playerType; 
+      if (room.turnIndex == 0) {
+        room.turn = room.players[1];
+        room.turnIndex = 1;
+      }
+      else{
+        room.turn = room.players[0];
+        room.turnIndex = 0;
+      }
+      room = await room.save()
+      io.to(roomId).emit('tapped',{
+        index,choice,room,
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  })
+
+  socket.on('winner', async ({winnerSocketId,roomId}) =>{
+    try {
+      let room = await Room.findById(roomId)
+      let player = room.players.find((playerr)=>playerr.socketID == winnerSocketId);
+      player.points++;
+      room = await room.save();
+
+      if (player.points>=room.maxRounds) {
+        io.to(roomId).emit('endGame',player)
+      }else{
+        io.to(roomId).emit("pointIncrease",player);
       }
     } catch (error) {
       console.log(error);

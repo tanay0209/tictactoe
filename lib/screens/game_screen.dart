@@ -21,38 +21,48 @@ class _GameScreenState extends State<GameScreen> {
     super.initState();
     _socketMethods.updateRoomListener(context);
     _socketMethods.updatePlayerStateListener(context);
+    _socketMethods.pointIncreaseListener(context);
+    _socketMethods.endGameListener(context);
   }
 
   @override
   Widget build(BuildContext context) {
     RoomDataProvider roomDataProvider = Provider.of<RoomDataProvider>(context);
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: ModalRoute.of(context)!.canPop
-              ? Container(
-                  margin: const EdgeInsets.all(10),
-                  child: IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        size: 30,
-                      )),
-                )
-              : null,
-        ),
-        body: roomDataProvider.roomData['isJoin']
-            ? const WaitingLobby()
-            : SafeArea(
-                child: Column(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: ModalRoute.of(context)!.canPop
+            ? Container(
+                margin: const EdgeInsets.all(
+                  10,
+                ),
+                child: IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios,
+                    size: 30,
+                  ),
+                ),
+              )
+            : null,
+      ),
+      body: roomDataProvider.roomData['isJoin']
+          ? const WaitingLobby()
+          : SafeArea(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   const Scoreboard(),
-                  const TicTacToeBoard()
+                  const TicTacToeBoard(),
+                  Text(
+                    '${roomDataProvider.roomData['turn']['nickname']}\'s turn',
+                  )
                 ],
-              )));
+              ),
+            ),
+    );
   }
 }

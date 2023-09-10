@@ -26,11 +26,12 @@ class _WaitingLobbyState extends State<WaitingLobby> {
     _roomIdController.dispose();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Waiting for a player to Join"),
+        const Text("Waiting for a player to Join"),
         const SizedBox(
           height: 20,
         ),
